@@ -1,2 +1,6 @@
 # gomod
-公共包
+
+更新依赖包
+> go mod tidy<br>
+
+
