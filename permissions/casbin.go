@@ -35,7 +35,7 @@ func setup(){
 }
 
 
-func testRBAC(){
+func TestRBAC(){
 
 	/**
 	p策略 -> 用户/角色-资源-访问的映射关系
@@ -56,28 +56,28 @@ func testRBAC(){
 	g	user1	role2
 
 	*/
-	//loger.Info(casbin.Enforcer.GetAllRoles())		//所有角色 [role1 role2]
-	//loger.Info(casbin.Enforcer.GetAllSubjects())	//所有策略对象，即包含资源/用户/角色 [alice1 alice2 role1]
-	//loger.Info(casbin.Enforcer.GetAllActions())		//所有操作 [read]
-	//loger.Info(casbin.Enforcer.GetAllObjects())		//所有访问对象（访问资源） /user/login
-	//loger.Info(casbin.Enforcer.GetUsersForRole("role1"))	//获取属于角色role1的用户[user1 user2] <nil>
-	//loger.Info(casbin.Enforcer.GetRolesForUser("user1")) //获取用户user1拥有的角色 [role1 role2] <nil>]
-	//loger.Info(casbin.Enforcer.GetRolesForUser("user2")) //获取用户user2拥有的角色[role1] <nil>
-	//
-	//sub := "role1" 			// 用户或角色
-	//obj := "/user/login" 	// 将要访问的资源
-	//act := "read" 			// 对资源执行的操作
-	//loger.Info("casbin Enforce: ", casbin.Enforcer.Enforce(sub, obj, act))	// [casbin Enforce：  true]
-	//
-	//sub = "alice1" 			// 用户或角色
-	//obj = "/user/login" 	// 将要访问的资源
-	//act = "read" 			// 对资源执行的操作
-	//loger.Info("casbin Enforce: ", casbin.Enforcer.Enforce(sub, obj, act))	// [casbin Enforce：  true]
-	//
-	//sub = "alice1" 			// 用户或角色
-	//obj = "/user/logout" 	// 将要访问的资源
-	//act = "read" 			// 对资源执行的操作
-	//loger.Info("casbin Enforce: ", casbin.Enforcer.Enforce(sub, obj, act))	// [casbin Enforce：  false]
+	loger.Info(Casbin.GetAllRoles())		//所有角色 [role1 role2]
+	loger.Info(Casbin.GetAllSubjects())	//所有策略对象，即包含资源/用户/角色 [alice1 alice2 role1]
+	loger.Info(Casbin.GetAllActions())		//所有操作 [read]
+	loger.Info(Casbin.GetAllObjects())		//所有访问对象（访问资源） /user/login
+	loger.Info(Casbin.GetUsersForRole("role1"))	//获取属于角色role1的用户[user1 user2] <nil>
+	loger.Info(Casbin.GetRolesForUser("user1")) //获取用户user1拥有的角色 [role1 role2] <nil>]
+	loger.Info(Casbin.GetRolesForUser("user2")) //获取用户user2拥有的角色[role1] <nil>
+
+	sub := "role1" 			// 用户或角色
+	obj := "/user/login" 	// 将要访问的资源
+	act := "read" 			// 对资源执行的操作
+	loger.Info("casbin Enforce: ", Casbin.Enforce(sub, obj, act))	// [casbin Enforce：  true]
+
+	sub = "alice1" 			// 用户或角色
+	obj = "/user/login" 	// 将要访问的资源
+	act = "read" 			// 对资源执行的操作
+	loger.Info("casbin Enforce: ", Casbin.Enforce(sub, obj, act))	// [casbin Enforce：  true]
+
+	sub = "alice1" 			// 用户或角色
+	obj = "/user/logout" 	// 将要访问的资源
+	act = "read" 			// 对资源执行的操作
+	loger.Info("casbin Enforce: ", Casbin.Enforce(sub, obj, act))	// [casbin Enforce：  false]
 
 
 }
