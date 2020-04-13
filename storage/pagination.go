@@ -5,8 +5,8 @@ import (
 )
 
 type Page struct {
-	Start  	uint `form:"start"`
-	End 	uint `form:"end"`
+	Page  	uint `form:"page"`
+	Length 	uint `form:"length"`
 }
 
 type PageResult struct {
@@ -27,17 +27,15 @@ type Pagination interface {
 */
 func PageDB(pagination Pagination, page Page) (*gorm.DB){
 
-	if page.Start <= 0 {
-		page.Start = 1
+	if page.Page <= 0 {
+		page.Page = 1
 	}
-	if page.End <= 0 {
-		page.End = 10
+	if page.Length <= 0 {
+		page.Length = 10
 	}
-	if page.End < page.Start {
-		page.End = page.Start
+	if page.Length > 200 {
+		page.Length = 200
 	}
 
-	limit := (page.End - page.Start) + 1
-
-	return DB.Model(pagination).Offset(page.Start).Limit(limit)
+	return DB.Model(pagination).Offset(int((page.Page-1)*page.Length)).Limit(page.Length)
 }
