@@ -7,14 +7,14 @@ import (
 )
 
 type Model struct {
-	ID        int64 `gorm:"primary_key"`
+	ID uint `gorm:"column:id;primary_key" json:"id"`
 }
 
 type BaseModel struct {
-	ID        	int64 `gorm:"primary_key"`
-	CreatedAt 	Time `gorm:"column:create_time";json:"create_time"`
-	UpdatedAt 	Time `gorm:"column:update_time";json:"update_time"`
-	DeletedAt 	*Time `gorm:"column:delete_time";json:"create_time";sql:"index"`
+	ID        uint `gorm:"column:id;primary_key" json:"id"`
+	CreatedAt Time `gorm:"column:create_time" json:"create_time"`
+	UpdatedAt Time `gorm:"column:update_time" json:"update_time"`
+	DeletedAt Time `gorm:"column:delete_time" json:"create_time";sql:"index"`
 }
 
 type Time time.Time
