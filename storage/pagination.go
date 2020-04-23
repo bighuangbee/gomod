@@ -9,10 +9,7 @@ type Page struct {
 	Length 	uint `form:"length"`
 }
 
-type PageResult struct {
-	List 	interface{} `json:"list"`
-	Total 	uint	`json:"total"`
-}
+type PageResult map[string]interface{}
 
 /**
 	分页接口

@@ -25,6 +25,7 @@ type Config struct {
 
 	RbacModelFilePath 	string `yaml:"rbacModelFilePath"`
 
+	PosReportInterval 	int `yaml:"posReportInterval"`
 }
 
 func init(){

@@ -14,7 +14,7 @@ type BaseModel struct {
 	ID        uint `gorm:"column:id;primary_key" json:"id"`
 	CreatedAt Time `gorm:"column:create_time" json:"create_time"`
 	UpdatedAt Time `gorm:"column:update_time" json:"update_time"`
-	DeletedAt Time `gorm:"column:delete_time" json:"create_time";sql:"index"`
+	DeletedAt Time `gorm:"column:delete_time" json:"delete_time";sql:"index"`
 }
 
 type Time time.Time
@@ -53,7 +53,7 @@ func (t Time) Value() (driver.Value, error) {
 	var zeroTime time.Time
 	var ti = time.Time(t)
 	if ti.UnixNano() == zeroTime.UnixNano() {
-		return "0000-00-00 00:00:00", nil	//Time的默认值, Writor
+		return nil, nil	//Time的默认值, Writor
 	}
 	return ti, nil
 }

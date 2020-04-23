@@ -59,3 +59,12 @@ func FormatWhereIn(str string) ( whereIn string){
 	}
 	return
 }
+
+func InArray(str string, arr []string) bool{
+	for _, val := range arr{
+		if val == str{
+			return true
+		}
+	}
+	return false
+}
