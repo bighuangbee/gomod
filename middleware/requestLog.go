@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"github.com/bighuangbee/gomod/loger"
 	"github.com/gin-gonic/gin"
+	"io/ioutil"
+	"strings"
 	"time"
 )
 
@@ -17,17 +19,26 @@ func RequestLog() gin.HandlerFunc {
 	return func(c *gin.Context) {
 
 		startTime := time.Now()
-		c.DefaultPostForm("test", "")
-		c.Request.ParseForm()
 
-		loger.Info(
-			"Request " + c.Request.Method,
-			c.ClientIP(),
-			c.Request.RequestURI,
-			c.Request.Header.Get("Authorization"),
-			c.Request.PostForm.Encode(),
-			c.Request.Header.Get("Content-Type"),
-		)
+		var requestParams interface{};
+		if strings.Contains(c.Request.Header.Get("Content-Type"), "application/json"){
+			body, _ := ioutil.ReadAll(c.Request.Body)
+			requestParams = string(body)
+		} else{
+			c.DefaultPostForm("test", "")
+			c.Request.ParseForm()
+
+			requestParams = c.Request.PostForm
+		}
+
+		//loger.Info(
+		//	"Request " + c.Request.Method,
+		//	c.ClientIP(),
+		//	c.Request.RequestURI,
+		//	c.Request.Header.Get("Authorization"),
+		//	requestParams,
+		//	c.Request.Header.Get("Content-Type"),
+		//)
 
 		writer := responeWriter{
 			c.Writer,
@@ -38,12 +49,13 @@ func RequestLog() gin.HandlerFunc {
 		c.Next()
 
 		loger.Info(
-			"Respone " + c.Request.Method,
+			c.Request.Method,
 			c.ClientIP(),
 			c.Request.RequestURI,
-			c.Request.Header.Get("Authorization"),
 			time.Now().Sub(startTime),
-			writer.WriterBuff.String(),
+			requestParams,
+			c.Request.Header.Get("Authorization"),
+			"\n[Respone]:" + writer.WriterBuff.String(),
 		)
 	}
 }

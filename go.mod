@@ -5,6 +5,7 @@ go 1.13
 require (
 	github.com/casbin/casbin v1.9.1
 	github.com/casbin/gorm-adapter v1.0.0
+	github.com/dgrijalva/jwt-go v3.2.0+incompatible // indirect
 	github.com/fastly/go-utils v0.0.0-20180712184237-d95a45783239 // indirect
 	github.com/go-redis/redis v6.15.7+incompatible
 	github.com/jehiah/go-strftime v0.0.0-20171201141054-1d33003b3869 // indirect
