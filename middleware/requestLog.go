@@ -54,6 +54,7 @@ func RequestLog() gin.HandlerFunc {
 			c.Request.RequestURI,
 			time.Now().Sub(startTime),
 			requestParams,
+			c.Request.Header.Get("Content-Type"),
 			c.Request.Header.Get("Authorization"),
 			"\n[Respone]:" + writer.WriterBuff.String(),
 		)
