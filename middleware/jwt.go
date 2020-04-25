@@ -18,11 +18,19 @@ func Authorization() gin.HandlerFunc{
 		}
 
 		claims, err := jwtService.ParseToken(tokenStr)
-
 		if err == nil {
+
+			if jwtService.IsInvalidToken(tokenStr) {
+				respone.UnAuthorized(c, "您的帐户异地登陆或令牌失效")
+				return
+			}
+
 			c.Set("user_id", int64(claims.UserId))
 			c.Set("roles", claims.Roles)
 			c.Set("uuid", claims.Uuid)
+
+			c.Set("uuid", claims.Uuid)
+			c.Set("claims", claims)
 
 			c.Next()
 			return
