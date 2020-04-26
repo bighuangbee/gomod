@@ -4,7 +4,8 @@ import (
 	"bytes"
 	"github.com/bighuangbee/gomod/loger"
 	"github.com/gin-gonic/gin"
-	"io/ioutil"
+	//"io/ioutil"
+	"net/http/httputil"
 	"strings"
 	"time"
 )
@@ -22,7 +23,7 @@ func RequestLog() gin.HandlerFunc {
 
 		var requestParams interface{};
 		if strings.Contains(c.Request.Header.Get("Content-Type"), "application/json"){
-			body, _ := ioutil.ReadAll(c.Request.Body)
+			body, _ := httputil.DumpRequest(c.Request, true)
 			requestParams = string(body)
 		} else{
 			c.DefaultPostForm("test", "")
@@ -49,12 +50,10 @@ func RequestLog() gin.HandlerFunc {
 		c.Next()
 
 		loger.Info(
-			c.Request.Method,
+			"\n[Request]:",
 			c.ClientIP(),
-			c.Request.RequestURI,
 			time.Now().Sub(startTime),
 			requestParams,
-			c.Request.Header.Get("Content-Type"),
 			c.Request.Header.Get("Authorization"),
 			"\n[Respone]:" + writer.WriterBuff.String(),
 		)
