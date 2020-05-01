@@ -52,8 +52,11 @@ func RequestLog() gin.HandlerFunc {
 		loger.Info(
 			"\n[Request]:",
 			c.ClientIP(),
+			c.Request.Method,
+			c.Request.RequestURI,
 			time.Now().Sub(startTime),
 			requestParams,
+			c.Request.Header.Get("Content-Type"),
 			c.Request.Header.Get("Authorization"),
 			"\n[Respone]:" + writer.WriterBuff.String(),
 		)
