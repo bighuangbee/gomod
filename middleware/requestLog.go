@@ -2,10 +2,10 @@ package middleware
 
 import (
 	"bytes"
+	"encoding/json"
 	"github.com/bighuangbee/gomod/loger"
 	"github.com/gin-gonic/gin"
-	//"io/ioutil"
-	"net/http/httputil"
+	"io/ioutil"
 	"strings"
 	"time"
 )
@@ -21,31 +21,31 @@ func RequestLog() gin.HandlerFunc {
 
 		startTime := time.Now()
 
-		var requestParams interface{};
-		if strings.Contains(c.Request.Header.Get("Content-Type"), "application/json"){
-			body, _ := httputil.DumpRequest(c.Request, true)
-			requestParams = string(body)
-		} else{
-			c.DefaultPostForm("test", "")
-			c.Request.ParseForm()
+		var requestParams string;
+		if c.Request.Method == "GET"{
+			if len(c.Request.URL.Query()) > 0{
+				params, _ := json.Marshal(c.Request.URL.Query())
+				requestParams = string(params)
+			}
+		}else{
+			if strings.Contains(c.Request.Header.Get("Content-Type"), "application/json"){
+				body,_ := ioutil.ReadAll(c.Request.Body)
+				c.Request.Body = ioutil.NopCloser(bytes.NewBuffer(body))
+				requestParams = string(body)
+			} else{
+				c.DefaultPostForm("default", "")
+				c.Request.ParseForm()
 
-			requestParams = c.Request.PostForm
+				result,_ := json.Marshal(c.Request.PostForm)
+				requestParams = string(result)
+			}
 		}
 
-		//loger.Info(
-		//	"Request " + c.Request.Method,
-		//	c.ClientIP(),
-		//	c.Request.RequestURI,
-		//	c.Request.Header.Get("Authorization"),
-		//	requestParams,
-		//	c.Request.Header.Get("Content-Type"),
-		//)
-
-		writer := responeWriter{
-			c.Writer,
-			bytes.NewBuffer([]byte("")),
-		}
-		c.Writer = &writer
+		//writer := responeWriter{
+		//	c.Writer,
+		//	bytes.NewBuffer([]byte("")),
+		//}
+		//c.Writer = &writer
 
 		c.Next()
 
@@ -58,7 +58,7 @@ func RequestLog() gin.HandlerFunc {
 			requestParams,
 			c.Request.Header.Get("Content-Type"),
 			c.Request.Header.Get("Authorization"),
-			"\n[Respone]:" + writer.WriterBuff.String(),
+			//"\n[Respone]:" + writer.WriterBuff.String(),
 		)
 	}
 }
