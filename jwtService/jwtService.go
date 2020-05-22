@@ -2,10 +2,10 @@ package jwtService
 
 import (
 	"fmt"
-	"github.com/dgrijalva/jwt-go"
 	"github.com/bighuangbee/gomod/config"
-	redis2 "github.com/go-redis/redis"
 	"github.com/bighuangbee/gomod/redis"
+	"github.com/dgrijalva/jwt-go"
+	redis2 "github.com/go-redis/redis"
 	"time"
 )
 
@@ -57,16 +57,16 @@ func (user *UserJwt)ParseToken(tokenStr string) (*UserClaims, error) {
 	return nil, err
 }
 
-func (user *UserJwt)GetExistsToken(userName string)(string, error){
-	return redis.Redis.Get(user.CreateTokenKey(userName)).Result()
-}
-
 func (user *UserJwt)SetToken(userName string, token string) error{
 	return redis.Redis.Set(user.CreateTokenKey(userName), token, time.Minute * time.Duration(config.ConfigData.LoginExpire)).Err()
 }
 
-func (user *UserJwt)DelToken(userName string){
-	redis.Redis.Del(user.CreateTokenKey(userName))
+func (user *UserJwt)GetExistsToken(userName string)(string, error){
+	return redis.Redis.Get(user.CreateTokenKey(userName)).Result()
+}
+
+func (user *UserJwt)DelToken(userName string) error{
+	return redis.Redis.Del(user.CreateTokenKey(userName)).Err()
 }
 
 // token索引键
@@ -81,7 +81,7 @@ func (user *UserJwt)JoinInvalidToken(token string){
 
 // token是否已失效
 func (user *UserJwt)IsInvalidToken(token string) bool{
-	_, err := redis.Redis.Get(fmt.Sprintf(user.InValidTokenKey, token)).Result()
+	token, err := redis.Redis.Get(fmt.Sprintf(user.InValidTokenKey, token)).Result()
 	if err == redis2.Nil{
 		return false
 	}

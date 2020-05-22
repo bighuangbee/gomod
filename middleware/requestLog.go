@@ -50,7 +50,7 @@ func RequestLog() gin.HandlerFunc {
 		c.Next()
 
 		loger.Info(
-			"\n[Request]:",
+			"[Request]:",
 			c.ClientIP(),
 			c.Request.Method,
 			c.Request.RequestURI,
