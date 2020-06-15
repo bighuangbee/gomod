@@ -3,8 +3,10 @@ package jwtService
 import (
 	"fmt"
 	"github.com/bighuangbee/gomod/config"
+	"github.com/bighuangbee/gomod/http/respone"
 	"github.com/bighuangbee/gomod/redis"
 	"github.com/dgrijalva/jwt-go"
+	"github.com/gin-gonic/gin"
 	redis2 "github.com/go-redis/redis"
 	"time"
 )
@@ -14,12 +16,21 @@ import (
 * @Date: 2020/4/24 22:36
  */
 
+const JWT_KEY_SYS = "sysUser"
+const JWT_KEY_DUTY = "dutyUser"
+const JWT_KEY_DRONE = "droneUser"
+
+const USER_TYPE_MOINTOR = 1
+const USER_TYPE_DUTY = 2
+const USER_TYPE_DRONE = 3
+
 type UserClaims struct {
 	UserId uint `json:"user_id"`
 	UserName string `json:"username"`
 	NickName string `json:"nickname"`
 	Roles []string `json:"roles"`
 	Uuid string `json:"deivce_uuid"`
+	Type int `json:"type"`
 	jwt.StandardClaims
 }
 
@@ -57,6 +68,15 @@ func (user *UserJwt)ParseToken(tokenStr string) (*UserClaims, error) {
 	return nil, err
 }
 
+func NewUserJwt(userType string) *UserJwt{
+	return &UserJwt{
+		Type:            userType,
+		Encrtpy:         config.ConfigData.JwtEncrtpy,
+		TokenKey:        userType + ":token_%s",
+		InValidTokenKey: userType + "TokenInvalid:%s",
+	}
+}
+
 func (user *UserJwt)SetToken(userName string, token string) error{
 	return redis.Redis.Set(user.CreateTokenKey(userName), token, time.Minute * time.Duration(config.ConfigData.LoginExpire)).Err()
 }
@@ -86,4 +106,45 @@ func (user *UserJwt)IsInvalidToken(token string) bool{
 		return false
 	}
 	return true
+}
+
+
+
+func Authorization(userType string) gin.HandlerFunc{
+
+	return func(c *gin.Context) {
+
+		tokenStr := c.GetHeader("Authorization")
+		if tokenStr == ""{
+			respone.UnAuthorized(c, "登录令牌为空")
+			return
+		}
+
+		jwt := NewUserJwt(userType)
+		claims, err := jwt.ParseToken(tokenStr)
+		if err == nil {
+			existsToken, err := jwt.GetExistsToken(claims.UserName)
+			if err != nil || existsToken == ""{
+				respone.UnAuthorized(c, "您的帐户登录失效")
+				return
+			}
+
+			if jwt.IsInvalidToken(tokenStr) {
+				respone.UnAuthorized(c, "您的帐户异地登或令牌失效")
+				return
+			}
+
+			c.Set("user_id", int64(claims.UserId))
+			c.Set("roles", claims.Roles)
+			c.Set("device_uuid", claims.Uuid)
+
+			c.Set("uuid", claims.Uuid)
+			c.Set("claims", claims)
+
+			c.Next()
+			return
+		}
+
+		respone.UnAuthorized(c,err.Error())
+	}
 }

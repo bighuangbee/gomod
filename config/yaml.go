@@ -26,6 +26,9 @@ type Config struct {
 	RbacModelFilePath 	string `yaml:"rbacModelFilePath"`
 
 	PosReportInterval 	int `yaml:"posReportInterval"`
+
+	TRTCSdkAppId 	int `yaml:"trtcSdkAppId"`
+	TRTCSdkAppKey 	string `yaml:"trtcSdkAppKey"`
 }
 
 func init(){
