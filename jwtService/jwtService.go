@@ -68,17 +68,17 @@ func (user *UserJwt)ParseToken(tokenStr string) (*UserClaims, error) {
 	return nil, err
 }
 
+func (user *UserJwt)SetToken(userName string, token string) error{
+	return redis.Redis.Set(user.CreateTokenKey(userName), token, time.Minute * time.Duration(config.ConfigData.LoginExpire)).Err()
+}
+
 func NewUserJwt(userType string) *UserJwt{
 	return &UserJwt{
 		Type:            userType,
-		Encrtpy:         config.ConfigData.JwtEncrtpy,
+		Encrtpy:         userType + config.ConfigData.JwtEncrtpy,
 		TokenKey:        userType + ":token_%s",
 		InValidTokenKey: userType + "TokenInvalid:%s",
 	}
-}
-
-func (user *UserJwt)SetToken(userName string, token string) error{
-	return redis.Redis.Set(user.CreateTokenKey(userName), token, time.Minute * time.Duration(config.ConfigData.LoginExpire)).Err()
 }
 
 func (user *UserJwt)GetExistsToken(userName string)(string, error){

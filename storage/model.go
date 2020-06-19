@@ -7,7 +7,7 @@ import (
 )
 
 type Model struct {
-	ID uint `gorm:"column:id;primary_key" json:"id"`
+	ID uint `gorm:"column:id;primary_key" json:"id,omitempty"`
 }
 
 type BaseModel struct {
