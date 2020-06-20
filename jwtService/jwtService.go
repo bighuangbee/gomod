@@ -8,6 +8,7 @@ import (
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	redis2 "github.com/go-redis/redis"
+	"strconv"
 	"time"
 )
 
@@ -23,6 +24,12 @@ const JWT_KEY_DRONE = "droneUser"
 const USER_TYPE_MOINTOR = 1
 const USER_TYPE_DUTY = 2
 const USER_TYPE_DRONE = 3
+
+var USER_TYPE  = map[int]string{
+	USER_TYPE_MOINTOR: JWT_KEY_SYS,
+	USER_TYPE_DUTY: JWT_KEY_DUTY,
+	USER_TYPE_DRONE: JWT_KEY_DRONE,
+}
 
 type UserClaims struct {
 	UserId uint `json:"user_id"`
@@ -110,9 +117,18 @@ func (user *UserJwt)IsInvalidToken(token string) bool{
 
 
 
-func Authorization(userType string) gin.HandlerFunc{
+func Authorization(authType ...string) gin.HandlerFunc{
 
 	return func(c *gin.Context) {
+		var userType string
+		if len(authType) > 0{
+			userType = authType[0]
+		}else if c.GetHeader("UserType") != ""{
+			uType,_ := strconv.Atoi(c.GetHeader("UserType"))
+			userType = USER_TYPE[uType]
+		}else{
+			userType = USER_TYPE[USER_TYPE_DUTY]
+		}
 
 		tokenStr := c.GetHeader("Authorization")
 		if tokenStr == ""{
