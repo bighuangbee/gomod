@@ -13,6 +13,8 @@ type Config struct {
 	JwtEncrtpy 		string `yaml:"jwtEncrtpy"`
 	LoginExpire 	int64 `yaml:"loginExpire"`
 
+	Debug			bool `yaml:"debug"`
+
 	DbType 			string `yaml:"dbType"`
 	DbUser 			string `yaml:"dbUser"`
 	DbHost 			string `yaml:"dbHost"`

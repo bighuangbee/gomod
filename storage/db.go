@@ -3,6 +3,7 @@ package storage
 import (
 	"fmt"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
+	_ "github.com/jinzhu/gorm/dialects/postgres"
 	"github.com/jinzhu/gorm"
 	"github.com/bighuangbee/gomod/config"
 	"github.com/bighuangbee/gomod/loger"
@@ -25,17 +26,27 @@ func open() {
 	dbName 		:= config.ConfigData.DbName
 
 
-	DB, err = gorm.Open(dbType, fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8&parseTime=True&loc=Local",
-		user,
-		password,
-		host,
-		dbName))
+	if dbType == "mysql" {
+		DB, err = gorm.Open(dbType, fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8&parseTime=True&loc=Local",
+			user,
+			password,
+			host,
+			dbName))
+	}else if dbType == "postgres"{
+
+		DB, err = gorm.Open("postgres", fmt.Sprintf("host=%s dbname=%s user=%s sslmode=disable password=%s",
+			host,
+			dbName,
+			user,
+			password))
+	}
+
 
 	if err != nil {
 		panic("DataBase Connected Failed!" + err.Error())
 	}
 
-	DB.LogMode(true)
+	DB.LogMode(config.ConfigData.Debug)
 	DB.SingularTable(true)
 	DB.DB().SetMaxIdleConns(10)
 	DB.DB().SetMaxOpenConns(100)
